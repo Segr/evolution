@@ -96,24 +96,25 @@ JS;
     }
 }
 
-if ($modx->db->getValue($modx->db->select('published', $modx->getFullTableName('site_content'), "id='{$unauthorized_page}'")) == 0) {
-    $warningspresent = 1;
-    $warnings[] = array($_lang['configcheck_unauthorizedpage_unpublished']);
+if ($row = $modx->db->getRow($modx->db->select('published,privateweb', $modx->getFullTableName('site_content'), "id='{$unauthorized_page}'"))) {
+	if ($row['published']==0) {
+		$warningspresent = 1;
+		$warnings[] = array($_lang['configcheck_unauthorizedpage_unpublished']);
+	}
+	if ($row['privateweb']==1) {
+		$warningspresent = 1;
+		$warnings[] = array($_lang['configcheck_unauthorizedpage_unavailable']);
+	}
 }
-
-if ($modx->db->getValue($modx->db->select('published', $modx->getFullTableName('site_content'), "id='{$error_page}'")) == 0) {
-    $warningspresent = 1;
-    $warnings[] = array($_lang['configcheck_errorpage_unpublished']);
-}
-
-if ($modx->db->getValue($modx->db->select('privateweb', $modx->getFullTableName('site_content'), "id='{$unauthorized_page}'")) == 1) {
-    $warningspresent = 1;
-    $warnings[] = array($_lang['configcheck_unauthorizedpage_unavailable']);
-}
-
-if ($modx->db->getValue($modx->db->select('privateweb', $modx->getFullTableName('site_content'), "id='{$error_page}'")) == 1) {
-    $warningspresent = 1;
-    $warnings[] = array($_lang['configcheck_errorpage_unavailable']);
+if ($row = $modx->db->getRow($modx->db->select('published,privateweb', $modx->getFullTableName('site_content'), "id='{$error_page}'"))) {
+	if ($row['published']==0) {
+		$warningspresent = 1;
+		$warnings[] = array($_lang['configcheck_errorpage_unpublished']);
+	}
+	if ($row['privateweb']==1) {
+		$warningspresent = 1;
+		$warnings[] = array($_lang['configcheck_errorpage_unavailable']);
+	}
 }
 
 if (!function_exists('checkSiteCache')) {
